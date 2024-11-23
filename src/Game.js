@@ -1,125 +1,120 @@
 // components/Game.js
 import * as THREE from 'three';
-import Floor from './components/Floor.js';
 import Character from './components/Character.js';
-import Lights from './components/Lights.js';
 import InputHandler from './systems/InputHandler.js';
 import AnimationSystem from './systems/AnimationSystem.js';
 import GameLogic from './systems/GameLogic.js';
 import GameLoop from './systems/GameLoop.js';
-import Wall from './components/Wall.js';
-import { Sky } from 'three/addons/objects/Sky.js';
+import Sky from './components/Sky.js'
 import CameraController from './components/CameraController.js';
+import Doll from "./components/Doll.js";
+import GameField from "./components/GameField.js";
+import {OrbitControls} from "three/addons";
+import GunMan from "./components/GunMan.js";
 
 class Game {
     constructor() {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(this.renderer.domElement);
 
-        this.camera.position.set(0, 0, 0);  // Adjusted camera position
-        this.camera.lookAt(0, 0, 0);
+        this.initSceneCameraSettings()
+
+        this.sky = new Sky(this.scene);
 
         this.inputHandler = new InputHandler();
         this.clock = new THREE.Clock();
+        this.gameField = new GameField(this.scene,this.onAssetLoaded.bind(this))
 
-        this.floor = new Floor();
-        this.scene.add(this.floor.mesh);
-        this.addWalls();
-
-        // Create the main character and add callback to start game once everything is loaded
-        this.character = new Character("Player1", this.onAssetsLoaded.bind(this));
+        this.character = new Character("You", this.onAssetLoaded.bind(this));
         this.character.loadModel();  // Start loading the model
 
+        this.doll = new Doll("Doll", this.onAssetLoaded.bind(this));
+        this.doll.loadModel();
 
+        this.gunMan1 = new GunMan(this.scene, this.onAssetLoaded.bind(this))
 
-        this.lights = new Lights(this.scene);
-        this.addDynamicSky();
+        this.assetsLoaded = 0; // Counter for loaded assets
+        this.totalAssets = 4; // Total number of assets to load
 
         this.animate = this.animate.bind(this);
-
         // Set loading state
         this.isGameReady = false;
     }
 
-    onAssetsLoaded() {
+    initSceneCameraSettings(){
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(this.renderer.domElement);
+
+        this.scene.background = new THREE.Color(0x87ceeb); // Example sky color
+        this.scene.fog = new THREE.Fog(this.scene.background, 1, 5000);
+
+        // camera
+
+        this.camera.position.set(0, 0, 0);  // Adjusted camera position
+        this.camera.lookAt(0, 0, 0);
+
+        window.addEventListener('resize', () => {
+            // Update camera aspect ratio and projection matrix
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+
+            // Adjust renderer size
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+
+    }
+
+    onAssetLoaded(){
+        this.assetsLoaded++;
+        if (this.assetsLoaded === this.totalAssets) {
+            this.onAllAssetsLoaded();
+        }
+    }
+
+    onAllAssetsLoaded() {
         // Callback called when all assets are loaded
         this.isGameReady = true;
         this.animationSystem = new AnimationSystem(this.character);
         this.addCharacterToScene();
-        this.gameLogic = new GameLogic(this.character, this.inputHandler, this.animationSystem);
+        this.gameLogic = new GameLogic(this.character, this.inputHandler, this.animationSystem, this.gunMan1);
         this.cameraController = new CameraController(this.camera, this.character.mesh, 5, 2);
+
         this.gameLoop = new GameLoop([
             this.character,
-            this.animationSystem,
             this.inputHandler,
+            this.doll,
+            this.cameraController,
+            this.gameLogic,
+            this.gunMan1
         ]);
-        // this.addDummyCharacters();  // Add dummy characters once everything is loaded
-        this.start();  // Start the game after everything is ready
-    }
-    addWalls() {
-        const wallHeight = 15;
-        const floorSize = this.floor.height; // Assuming floor dimensions are 100x100
-        const wallThickness = 1;
 
-        // Front Wall
-        const frontWall = new Wall(floorSize, wallHeight, { x: 0, y: wallHeight / 2, z: -floorSize / 2 }, { x: 0, y: 0, z: 0 });
-        this.scene.add(frontWall.mesh);
-
-        // Back Wall
-        const backWall = new Wall(floorSize, wallHeight, { x: 0, y: wallHeight / 2, z: floorSize / 2 }, { x: 0, y: Math.PI, z: 0 });
-        this.scene.add(backWall.mesh);
-
-        // Left Wall
-        const leftWall = new Wall(floorSize, wallHeight, { x: -floorSize / 2, y: wallHeight / 2, z: 0 }, { x: 0, y: Math.PI / 2, z: 0 });
-        this.scene.add(leftWall.mesh);
-
-        // Right Wall
-        const rightWall = new Wall(floorSize, wallHeight, { x: floorSize / 2, y: wallHeight / 2, z: 0 }, { x: 0, y: -Math.PI / 2, z: 0 });
-        this.scene.add(rightWall.mesh);
+        this.start();
     }
 
-    addDynamicSky() {
-        const sky = new Sky();
-        sky.scale.setScalar(450000); // Scale the sky object
-        this.scene.add(sky);
-
-        const sun = new THREE.Vector3();
-
-        const effectController = {
-            turbidity: 10,
-            rayleigh: 2,
-            mieCoefficient: 0.005,
-            mieDirectionalG: 0.7,
-            elevation: 10,
-            azimuth: 180,
-            exposure: this.renderer.toneMappingExposure,
-        };
-
-        const updateSun = () => {
-            const phi = THREE.MathUtils.degToRad(90 - effectController.elevation);
-            const theta = THREE.MathUtils.degToRad(effectController.azimuth);
-
-            sun.setFromSphericalCoords(1, phi, theta);
-
-            sky.material.uniforms['sunPosition'].value.copy(sun);
-        };
-
-        updateSun();
-    }
 
     addCharacterToScene() {
         // Add the main character to the scene
-        this.character.mesh.position.set(0, 0, this.floor.height / 2 );  // Adjusted character position
+        this.character.mesh.position.set(3, 0, (this.gameField.floor.height / 2) - 4 );  // Adjusted character position
         this.scene.add(this.character.mesh);
+
+        // Add the Doll character to the scene
+        this.doll.mesh.position.set(0, 2.5, -(this.gameField.floor.height / 2) +4  );  // Adjusted character position
+        this.scene.add(this.doll.mesh);
+
+        // add gunman to the scene
+
+        this.gunMan1.mesh.position.set(-10,0,-(this.gameField.floor.height / 2) +4  );
+        this.scene.add(this.gunMan1.mesh);
     }
 
 
     start() {
         if (this.isGameReady) {
-            this.animate();  // Start animation loop once everything is ready
+            this.animate();
+            this.gameField.startClock();
+
         }
     }
 
@@ -129,16 +124,7 @@ class Game {
         requestAnimationFrame(this.animate);
         const deltaTime = this.clock.getDelta();
 
-        // Update game logic
-        this.gameLogic.update(deltaTime);
-
-        this.cameraController.update();
-
-        // Update the game loop (general updates like animations)
         this.gameLoop.update(deltaTime);
-
-        // Update the main character and all dummy characters
-
 
         this.renderer.render(this.scene, this.camera);
     }

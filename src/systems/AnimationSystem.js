@@ -8,6 +8,8 @@ class AnimationSystem {
         if (isMoving) {
             this.character.playAnimation('walk');
         } else {
+            // this.character.stopAnimations();
+            // this.character.playAnimation('stop');
             this.character.playAnimation('idle');
         }
     }

@@ -16,13 +16,12 @@ class Character {
 
         this.nameLabel = null;  // Store the name label (3D text)
         this.onLoadCallback = onLoadCallback;
-        this.loadModel();
     }
 
     loadModel() {
-        this.loader.load('../assets/finalcRoatatev1.glb', async (gltf) => {
+        this.loader.load('../assets/die.glb', async (gltf) => {
             this.mesh = gltf.scene;
-            this.mesh.scale.set(1, 1, 1);
+            this.mesh.scale.set(1, .8, 1);
             this.mesh.position.set(0, 1, 10);
 
             // Set up the animation mixer
@@ -30,9 +29,6 @@ class Character {
             gltf.animations.forEach((clip) => {
                 this.animations[clip.name] = this.mixer.clipAction(clip);
             });
-
-            this.playAnimation('idle');
-            this.loaded = true;
 
             // Create and add the 3D name label after the model is loaded
             const fontLoader = new FontLoader();
@@ -75,34 +71,15 @@ class Character {
         }
     }
 
-    cloneCharacter() {
-        // Clone the loaded model and create a new character mesh
-        if (this.mesh) {
-            const clonedMesh = this.mesh.clone();
-            clonedMesh.position.set(Math.random() * 30 - 15, 1, 10); // Random position
 
-            // Set up animations for the cloned model
-            const mixer = new THREE.AnimationMixer(clonedMesh);
-            // this.model.animations.forEach((clip) => {
-            //     mixer.clipAction(clip).play();
-            // });
-
-            // Create and attach name label
-            // const nameLabel = this.nameLabel.clone();
-            // clonedMesh.add(nameLabel);
-
-            return { mesh: clonedMesh, mixer: mixer };
-        }
-        return null;
-    }
     playAnimation(name) {
         if (this.currentAction !== this.animations[name]) {
             if (this.currentAction) {
-                this.currentAction.fadeOut(0.2);
+                this.currentAction.fadeOut(.2);
             }
             this.currentAction = this.animations[name];
             if (this.currentAction) {
-                this.currentAction.reset().fadeIn(0.2).play();
+                this.currentAction.reset().fadeIn(.2).play();
             }
         }
     }
