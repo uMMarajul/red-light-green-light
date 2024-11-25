@@ -13,6 +13,9 @@ class GameLoop {
             }
         });
     }
+    resetClock(){
+        this.elapsedTime = 0;
+    }
 }
 
 export default GameLoop;

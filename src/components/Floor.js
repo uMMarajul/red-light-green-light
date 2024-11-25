@@ -1,10 +1,11 @@
 // components/Floor.js
 import * as THREE from 'three';
+import {Constant} from "../helper/Constant.js";
 
 class Floor {
     constructor() {
-        this.width = 50;
-        this.height = 60;
+        this.width = Constant.floorWidth;
+        this.height = Constant.floorHeight;
         this.mesh = this.createFloor();
 
     }
@@ -51,6 +52,8 @@ class Floor {
 
         // Create the line mesh
         const redLine = new THREE.Mesh(geometry, material);
+        // give a name
+        redLine.name = "redLine";
 
         // Position the red line (centered along the X-axis, spans Y-axis)
         // redLine.position.y = 0.01; // Slightly above the floor to prevent z-fighting

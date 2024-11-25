@@ -14,15 +14,17 @@ class SoundManager {
             gunShot: null,
             greenLight: null,
             redLight: null,
+            victory: null,
         };
 
         // Default priorities
         this.soundPriorities = {
             loadingScreen: 1,
-            gameplayMusic: 10,
+            gameplayMusic: 5,
             gunShot: 2,
             greenLight: 10,
             redLight: 10,
+            victory: 10,
         };
     }
 
@@ -53,6 +55,7 @@ class SoundManager {
         soundPromises.push(loadSound('../assets/sound/shot.mp3', 'gunShot'));
         soundPromises.push(loadSound('./assets/sound/redLightF.mp3', 'redLight'));
         soundPromises.push(loadSound('../assets/sound/gamePlay.mp3', 'gamePlayMusic'));
+        soundPromises.push(loadSound('../assets/sound/victory.mp3', 'victory'));
 
         // Return a promise that resolves when all sounds are loaded
         Promise.all(soundPromises).then(() => {
@@ -64,7 +67,7 @@ class SoundManager {
         this.soundPriorities[soundName] = priority;
     }
 
-    playSound(soundName) {
+    playSound(soundName, loop = false) {
         const sound = this.sounds[soundName];
         if (sound) {
             // Adjust volume based on priority
@@ -72,6 +75,7 @@ class SoundManager {
             const maxPriority = Math.max(...Object.values(this.soundPriorities));
             const normalizedVolume = priority / maxPriority; // Normalize volume based on priority
             sound.setVolume(normalizedVolume);
+            sound.setLoop(loop);
 
             // Play the sound
             if (!sound.isPlaying) {

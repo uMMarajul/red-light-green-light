@@ -13,10 +13,15 @@ class GameField {
         this.floor = null;
         this.walls = [];
         this.clockGroup = null; // Group for clock and text
-        this.timerValue = 30;
+        this.timerValue = 40;
         this.timerInterval = null;
+        this.timOut = false;
 
         this.initField(callback);
+    }
+
+    getObjectByName(name){
+        return this.scene.getObjectByName(name);
     }
 
     initField(callback) {
@@ -175,11 +180,7 @@ class GameField {
 
     updateTimerText() {
         if (!this.timerText || !this.font) return;
-
-        // Remove old text from the group
         this.clockGroup.remove(this.timerText);
-
-        // Create new timer text using the loaded font
         const textGeometry = new TextGeometry(`${this.timerValue}`, {
             font: this.font,
             size: 1,
@@ -187,30 +188,39 @@ class GameField {
         });
         const textMaterial = new THREE.MeshStandardMaterial({color: 0xffffff});
         const timerText = new THREE.Mesh(textGeometry, textMaterial);
-
-        timerText.position.set(-0.8, -0.6, 0.1); // Position text relative to the clock
-        this.clockGroup.add(timerText); // Add new text to the group
-
-        this.timerText = timerText; // Update reference
+        timerText.position.set(-0.8, -0.6, 0.1);
+        this.clockGroup.add(timerText);
+        this.timerText = timerText;
     }
 
     startClock() {
-        if (this.timerInterval) return; // Prevent multiple intervals
-
+        if (this.timerInterval) return;
+        this.timOut = false;
+        this.updateTimerText();
         this.timerInterval = setInterval(() => {
             this.timerValue--;
             this.updateTimerText();
 
             if (this.timerValue <= 0) {
-                clearInterval(this.timerInterval);
-                this.timerInterval = null;
+                this.stopClock();
             }
         }, 1000);
     }
 
     stopClock(){
+        this.timOut = true;
+        this.timerValue = 40;
         clearInterval(this.timerInterval);
+        this.timerInterval = null;
     }
+
+    stopClockWithWin(){
+        this.timerValue = 40;
+        clearInterval(this.timerInterval);
+        this.timerInterval = null;
+    }
+
+
 }
 
 export default GameField;

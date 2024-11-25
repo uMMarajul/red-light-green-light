@@ -1,17 +1,20 @@
 // systems/GameLogic.js
 import {CharacterAnimationEnum} from "../helper/GameEnums.js"
+import * as THREE from "three";
 
 const WALKING_SPEED = 0.01;
 const ROTATION_SPEED = 0.01;
 
 class GameLogic {
-    constructor(character, inputHandler, animationSystem, gunMan, doll, soundManager) {
+    constructor(character, inputHandler, animationSystem, gunMan, doll, soundManager, gameField, uiManager) {
         this.character = character;
         this.inputHandler = inputHandler;
         this.animationSystem = animationSystem;
         this.gunMan = gunMan;
         this.doll = doll;
         this.soundManager = soundManager;
+        this.gameField = gameField;
+        this.uiManager = uiManager;
 
         this.dollRotationToggle = true;
         this.lastDollRotationTime = 0;
@@ -57,6 +60,33 @@ class GameLogic {
         this.soundManager.playSound('gunShot');
     }
 
+    checkIfCharacterIsHit() {
+        const redLine = this.gameField.getObjectByName('redLine');
+        if (!redLine || !this.character.mesh) {
+            console.error('Red line or character mesh is not defined.');
+            return false; // Cannot determine
+        }
+
+        // Get global positions
+        const characterPosition = new THREE.Vector3();
+        this.character.mesh.getWorldPosition(characterPosition);
+
+        const redLinePosition = new THREE.Vector3();
+        redLine.getWorldPosition(redLinePosition);
+
+        // Define the acceptable threshold (e.g., the distance within which we consider it as a hit)
+        const threshold = 1.0; // Adjust as needed for accuracy
+
+        // Check if the character has crossed the red line
+        if (characterPosition.z <= redLinePosition.z + threshold) {
+            console.log('Character has hit the destination!');
+            return true;
+        }
+
+        return false;
+
+    }
+
     update(deltaTime, elapsedTime) {
         if (this.character.isDying) {
             this.animationSystem.update(CharacterAnimationEnum.DIE);
@@ -66,6 +96,10 @@ class GameLogic {
         if (!this.character.isAlive) {
             return;
         }
+        if(this.checkIfCharacterIsHit()){
+            this.gameWin = true;
+        }
+
 
         let isMoving = CharacterAnimationEnum.IDLE;
 
@@ -89,8 +123,16 @@ class GameLogic {
             isMoving = CharacterAnimationEnum.WALK;
         }
 
+        if(this.gameWin)
+            return;
+
         // If the doll is facing forward and character moves, fire gunman
         if (!this.dollRotationToggle && isMoving === CharacterAnimationEnum.WALK && this.character.isAlive && !this.character.isDying) {
+            this.firByGunMan();
+        }
+
+
+        if(this.gameField.timOut){
             this.firByGunMan();
         }
 
@@ -99,6 +141,15 @@ class GameLogic {
 
         // Update animations
         this.animationSystem.update(isMoving);
+    }
+
+    resetGame(){
+        this.dollRotationToggle = true;
+        this.lastDollRotationTime = 0;
+        this.character.resetState();
+        this.gameField.startClock();
+        this.doll.resetStates();
+        this.soundManager.playSound('gamePlayMusic');
     }
 }
 

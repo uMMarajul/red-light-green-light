@@ -23,6 +23,7 @@ class Game {
 
         this.assetManager = new AssetManager(5, this.onAssetsLoaded.bind(this));
         this.uiManager = new UIManager(this.start.bind(this), this.restart.bind(this));
+        this.inputHandler = new InputHandler();
 
 
         this.isGameReady = false;
@@ -95,9 +96,9 @@ class Game {
 
     start() {
         this.animationSystem = new AnimationSystem(this.character);
-        this.gameLogic = new GameLogic(this.character, new InputHandler(), this.animationSystem, this.gunMan, this.doll, this.soundManager);
+        this.gameLogic = new GameLogic(this.character, this.inputHandler, this.animationSystem, this.gunMan, this.doll, this.soundManager, this.gameField, this.uiManager);
         this.cameraController = new CameraController(this.camera, this.character.mesh, 4.2, 2);
-        this.touchController = new TouchControl(this.character.mesh);
+        this.touchController = new TouchControl(this.character.mesh, this.inputHandler);
         this.addCharacterToScene();
         this.gameLoop = new GameLoop([
             this.character,
@@ -112,14 +113,26 @@ class Game {
         this.animate();
     }
     restart() {
-        // Logic to restart the game
-        window.location.reload(); // Simplest way to reload everything
+        this.uiManager.hideAllScreens();
+        this.gameLogic.resetGame();
+        this.gameLoop.resetClock();
     }
+
 
     checkGameOver() {
         if (!this.character.isAlive) {
             this.uiManager.showGameOverScreen();
             this.gameField.stopClock();
+            this.soundManager.stopAllSounds();
+            return true;
+        }
+    }
+
+    checkGameWin() {
+        if (this.gameLogic.gameWin) {
+            this.uiManager.showWinScreen();
+            this.gameField.stopClockWithWin();
+            this.soundManager.stopAllSounds();
             return true;
         }
     }
@@ -127,6 +140,7 @@ class Game {
     animate() {
         if (!this.isGameReady) return;
         this.checkGameOver();
+        this.checkGameWin();
 
         requestAnimationFrame(this.animate.bind(this));
         const deltaTime = this.clock.getDelta();

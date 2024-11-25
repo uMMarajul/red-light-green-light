@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import {TextGeometry} from 'three/addons/geometries/TextGeometry.js'
+import {Constant} from "../helper/Constant.js";
 
 class Character {
     constructor(name = "Player1", onLoadCallback) {
@@ -104,6 +105,12 @@ class Character {
 
     update(deltaTime) {
         if (this.mixer) this.mixer.update(deltaTime);
+    }
+
+    resetState(){
+        this.isAlive = true;
+        this.mesh.position.set(3, 0, (Constant.floorHeight / 2) - 4 )
+        this.playAnimation('idle', true);
     }
 }
 

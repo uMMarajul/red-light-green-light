@@ -31,6 +31,10 @@ class Doll {
     getCurrentRotation() {
         return this.mesh ? this.mesh.rotation.y : 0;
     }
+
+    resetStates(){
+        this.mesh.rotation.y = Math.PI;
+    }
 }
 
 
