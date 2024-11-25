@@ -3,7 +3,7 @@ import * as THREE from 'three';
 
 class Wall {
     constructor(width, height, position, rotation) {
-        this.texturePath = "../assets/wall-bg.png";
+        this.texturePath = "../assets/texture/wall-bg.png";
         this.mesh = this.createWall(width, height, this.texturePath);
         this.mesh.position.set(position.x, position.y, position.z);
         if (rotation) {

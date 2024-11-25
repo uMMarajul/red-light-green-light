@@ -3,6 +3,7 @@ import {FontLoader} from 'three/addons/loaders/FontLoader.js';
 import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
 import Floor from "./Floor.js";
 import Wall from "./Wall.js";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
 class GameField {
     constructor(scene, callback) {
@@ -28,9 +29,23 @@ class GameField {
             this.clockGroup = this.createClock();
             if (callback) callback(); // Invoke callback after loading all resources
         });
+
+        this.loadTree()
+
         this.clockGroup = this.createClock(() => {
             if (callback) callback(); // Invoke callback after loading all resources
         });
+    }
+
+    loadTree(onComplete){
+        this.loader = new GLTFLoader();
+        this.loader.load('../assets/model/tree.glb', async (gltf) => {
+            this.tree = gltf.scene;
+            this.tree.scale.set(1, 1, 1);
+            this.tree.position.set(0,0,-60/2)
+            this.scene.add(this.tree);
+            if(onComplete) onComplete();
+        })
     }
 
     loadFont(onComplete) {
@@ -191,6 +206,10 @@ class GameField {
                 this.timerInterval = null;
             }
         }, 1000);
+    }
+
+    stopClock(){
+        clearInterval(this.timerInterval);
     }
 }
 

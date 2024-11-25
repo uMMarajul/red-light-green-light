@@ -15,7 +15,7 @@ class Floor {
 
         // Load texture
         const textureLoader = new THREE.TextureLoader();
-        const texture = textureLoader.load('../assets/groundtexturre.jpg');  // Replace with your texture path
+        const texture = textureLoader.load('../assets/texture/groundtexturre.jpg');  // Replace with your texture path
 
         // Adjust texture properties
         texture.wrapS = THREE.RepeatWrapping;

@@ -79,8 +79,6 @@ class Sky {
         const sky = new THREE.Mesh( skyGeo, skyMat );
         scene.add( sky );
 
-
-
     }
 
     updateHemisphereLightColor(hemiLightColor) {

@@ -12,6 +12,8 @@ class Character {
         this.animations = {};
         this.currentAction = null;
         this.loaded = false;
+        this.isAlive = true;
+        this.isDying = false;
         this.name = name;  // The name of the character
 
         this.nameLabel = null;  // Store the name label (3D text)
@@ -19,7 +21,7 @@ class Character {
     }
 
     loadModel() {
-        this.loader.load('../assets/die.glb', async (gltf) => {
+        this.loader.load('../assets/model/die.glb', async (gltf) => {
             this.mesh = gltf.scene;
             this.mesh.scale.set(1, .8, 1);
             this.mesh.position.set(0, 1, 10);
@@ -32,15 +34,14 @@ class Character {
 
             // Create and add the 3D name label after the model is loaded
             const fontLoader = new FontLoader();
-            fontLoader.load('../assets/helvetiker_regular.typeface.json', (font) => {
+            fontLoader.load('../assets/font/helvetiker_regular.typeface.json', (font) => {
                 this.createNameLabel(font);
                 this.loaded = true;
+                this.isAlive = true;
                 if (this.onLoadCallback) {
                     this.onLoadCallback();  // Notify when all assets are loaded
                 }
             });
-
-            // Add the model to the scene when it's loaded
 
         });
     }
@@ -72,16 +73,33 @@ class Character {
     }
 
 
-    playAnimation(name) {
-        if (this.currentAction !== this.animations[name]) {
+    playAnimation(name, loop = true) {
+        if (this.isAlive && this.currentAction !== this.animations[name]) {
+
             if (this.currentAction) {
-                this.currentAction.fadeOut(.2);
+                this.currentAction.fadeOut(0.2);
             }
             this.currentAction = this.animations[name];
             if (this.currentAction) {
-                this.currentAction.reset().fadeIn(.2).play();
+                this.currentAction.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce);
+                this.currentAction.clampWhenFinished = true;
+                this.currentAction.reset().fadeIn(0.2).play();
             }
         }
+    }
+
+    die() {
+        if (!this.isAlive) return;  // If already dead, do nothing
+
+        this.playAnimation('die', false);  // Play death animation if available
+        this.isDying = true;
+        // Optional: Add other death logic, like removing the character from the scene
+        setTimeout(() => {
+            this.isAlive = false;
+            this.isDying = false;
+
+        }, 1000);
+        console.log(`${this.name} has died.`);
     }
 
     update(deltaTime) {

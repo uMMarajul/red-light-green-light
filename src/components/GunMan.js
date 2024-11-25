@@ -6,14 +6,11 @@ class GunMan{
     constructor(scene, callback, gunman = null) {
         this.onLoadCallback = callback;
         this.loader = new GLTFLoader();
-        this.loadModel()
         this.bullets = [];
         this.scene = scene;
-
-
     }
     loadModel() {
-        this.loader.load('../assets/bot.glb',  (gltf) => {
+        this.loader.load('../assets/model/bot.glb',  (gltf) => {
             this.mesh = gltf.scene;
             this.mesh.scale.set(2, 2, 2);
             if(this.onLoadCallback){
@@ -22,9 +19,9 @@ class GunMan{
         });
     }
 
-    fireBullet(targetMesh) {
-        const startPosition = this.mesh.position.clone();
-        const bullet = new Bullet(this.scene, startPosition, targetMesh);
+    fireBullet(targetCharacter) {
+        const startPosition = this.mesh.position.clone().add(new THREE.Vector3(0,2,0));
+        const bullet = new Bullet(this.scene, startPosition, targetCharacter);
         this.bullets.push(bullet);
     }
 
