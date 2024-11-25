@@ -1,16 +1,18 @@
 import * as THREE from 'three';
 
 class SoundManager {
-    constructor(listener) {
+    constructor(camera, callback) {
+        this.listener = new THREE.AudioListener();
+        camera.add(this.listener);
         this.audioLoader = new THREE.AudioLoader();
-        this.listener = listener;
+        this.onLoadCallback = callback;
 
         // Sounds dictionary
         this.sounds = {
             loadingScreen: null,
             gameplayMusic: null,
             gunShot: null,
-            dollToggle: null,
+            redLight: null,
         };
     }
 
@@ -38,13 +40,15 @@ class SoundManager {
         };
 
         // Add loading tasks
-        soundPromises.push(loadSound('/sounds/loading-screen.mp3', 'loadingScreen'));
-        soundPromises.push(loadSound('/sounds/gameplay-music.mp3', 'gameplayMusic'));
-        soundPromises.push(loadSound('/sounds/gunshot.mp3', 'gunShot', true));
-        soundPromises.push(loadSound('/sounds/doll-toggle.mp3', 'dollToggle'));
+        // soundPromises.push(loadSound('/sounds/loading-screen.mp3', 'loadingScreen'));
+        // soundPromises.push(loadSound('/sounds/gameplay-music.mp3', 'gameplayMusic'));
+        soundPromises.push(loadSound('../assets/sound/shot.mp3', 'gunShot'));
+        soundPromises.push(loadSound('./assets/sound/redLightF.mp3', 'redLight'));
 
         // Return a promise that resolves when all sounds are loaded
-        return Promise.all(soundPromises);
+        Promise.all(soundPromises).then(() => {
+            this.onLoadCallback();
+        });
     }
 
     playSound(soundName) {

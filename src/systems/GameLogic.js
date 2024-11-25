@@ -5,17 +5,19 @@ const WALKING_SPEED = 0.01;
 const ROTATION_SPEED = 0.01;
 
 class GameLogic {
-    constructor(character, inputHandler, animationSystem, gunMan, doll) {
+    constructor(character, inputHandler, animationSystem, gunMan, doll, soundManager) {
         this.character = character;
         this.inputHandler = inputHandler;
         this.animationSystem = animationSystem;
         this.gunMan = gunMan;
         this.doll = doll;
+        this.soundManager = soundManager;
     }
 
 
     firByGunMan() {
         this.gunMan.fireBullet(this.character);
+        this.soundManager.playSound('gunShot');
     }
 
     update(deltaTime, elapsedTime) {

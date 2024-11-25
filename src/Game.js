@@ -12,6 +12,7 @@ import GameField from "./components/GameField.js";
 import GunMan from "./components/GunMan.js";
 import AssetManager from "./systems/AssetManager.js";
 import UIManager from "./systems/UIManager.js";
+import SoundManager from "./systems/SoundManager.js";
 
 class Game {
     constructor() {
@@ -19,14 +20,16 @@ class Game {
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
 
-        this.assetManager = new AssetManager(4, this.onAssetsLoaded.bind(this));
+        this.assetManager = new AssetManager(5, this.onAssetsLoaded.bind(this));
         this.uiManager = new UIManager(this.start.bind(this), this.restart.bind(this));
+
 
         this.isGameReady = false;
 
         this.initScene();
         this.initSky();
         this.loadAssets();
+        this.loadSounds();
 
         this.clock = new THREE.Clock();
 
@@ -64,6 +67,11 @@ class Game {
         this.gunMan.loadModel();
     };
 
+    loadSounds(){
+        this.soundManager = new SoundManager(this.camera, () => this.assetManager.assetLoaded());
+        this.soundManager.loadSounds();
+    }
+
     onAssetsLoaded() {
         this.uiManager.hideLoadingScreen();
         this.uiManager.showStartButton();
@@ -86,7 +94,7 @@ class Game {
 
     start() {
         this.animationSystem = new AnimationSystem(this.character);
-        this.gameLogic = new GameLogic(this.character, new InputHandler(), this.animationSystem, this.gunMan, this.doll);
+        this.gameLogic = new GameLogic(this.character, new InputHandler(), this.animationSystem, this.gunMan, this.doll, this.soundManager);
         this.cameraController = new CameraController(this.camera, this.character.mesh, 5, 2);
         this.addCharacterToScene();
         this.gameLoop = new GameLoop([
