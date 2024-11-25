@@ -3,7 +3,7 @@ import {CharacterAnimationEnum} from "../helper/GameEnums.js"
 import * as THREE from "three";
 
 const WALKING_SPEED = 0.016;
-const ROTATION_SPEED = 0.02;
+const ROTATION_SPEED = 0.01;
 
 class GameLogic {
     constructor(character, inputHandler, animationSystem, gunMan, doll, soundManager, gameField, uiManager) {
@@ -19,7 +19,7 @@ class GameLogic {
 
         this.dollRotationToggle = true;
         this.lastDollRotationTime = 0;
-        this.rotationSpeed = 40; // Speed for smooth rotation
+        this.rotationSpeed = 20; // Speed for smooth rotation
         this.randomDelay = this.getRandomDelay(); // Initialize the first random delay
         this.isDollRotating = false;
     }
@@ -86,7 +86,6 @@ class GameLogic {
 
         // Check if the character has crossed the red line
         if (characterPosition.z <= redLinePosition.z + threshold) {
-            console.log('Character has hit the destination!');
             return true;
         }
 
@@ -129,6 +128,7 @@ class GameLogic {
             this.character.mesh.rotation.y -= ROTATION_SPEED;
             isMoving = CharacterAnimationEnum.WALK;
         }
+        this.animationSystem.update(isMoving);
 
         if(this.gameWin)
             return;
@@ -146,11 +146,11 @@ class GameLogic {
         // Update doll rotation logic
         this.updateDollRotation(deltaTime, elapsedTime);
 
-        // Update animations
-        this.animationSystem.update(isMoving);
+
     }
 
     resetGame(){
+        this.gameWin = false;
         this.dollRotationToggle = true;
         this.lastDollRotationTime = 0;
         this.character.resetState();

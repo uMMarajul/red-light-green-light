@@ -88,7 +88,7 @@ export default class UIManager {
     hideAllScreens() {
         this.hideLoadingScreen();
         this.hideGameOverScreen();
-        this.hideGameOverScreen();
+        this.hideGameWinScreen();
     }
 
     gameWinScreen(){
@@ -129,6 +129,10 @@ export default class UIManager {
 
     showWinScreen() {
        this.gameWinScreen.style.display = 'flex';
+    }
+
+    hideGameWinScreen(){
+        this.gameWinScreen.style.display = 'none';
     }
 
 }
