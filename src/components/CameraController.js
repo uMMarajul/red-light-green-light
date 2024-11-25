@@ -7,6 +7,9 @@ class CameraController {
         this.target = target;  // The character to follow
         this.distance = distance;  // Distance behind the character
         this.height = height;  // Height of the camera above the character
+        // this.camera.position.x = 3;
+        // this.camera.position.y = 2;
+        // this.camera.position.z = 35;
     }
 
     update() {

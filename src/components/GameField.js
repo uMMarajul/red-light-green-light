@@ -50,7 +50,7 @@ class GameField {
 
     loadFont(onComplete) {
         const loader = new FontLoader();
-        loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
+        loader.load('../assets/font/helvetiker_regular.typeface.json', (font) => {
             this.font = font; // Store the loaded font
             if (onComplete) onComplete();
         });

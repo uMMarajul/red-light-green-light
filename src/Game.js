@@ -13,6 +13,7 @@ import GunMan from "./components/GunMan.js";
 import AssetManager from "./systems/AssetManager.js";
 import UIManager from "./systems/UIManager.js";
 import SoundManager from "./systems/SoundManager.js";
+import TouchControl from "./systems/TouchControl.js";
 
 class Game {
     constructor() {
@@ -95,7 +96,8 @@ class Game {
     start() {
         this.animationSystem = new AnimationSystem(this.character);
         this.gameLogic = new GameLogic(this.character, new InputHandler(), this.animationSystem, this.gunMan, this.doll, this.soundManager);
-        this.cameraController = new CameraController(this.camera, this.character.mesh, 5, 2);
+        this.cameraController = new CameraController(this.camera, this.character.mesh, 4.2, 2);
+        this.touchController = new TouchControl(this.character.mesh);
         this.addCharacterToScene();
         this.gameLoop = new GameLoop([
             this.character,
@@ -106,6 +108,7 @@ class Game {
         ]);
         this.isGameReady = true;
         this.gameField.startClock();
+        this.soundManager.playSound('gamePlayMusic');
         this.animate();
     }
     restart() {

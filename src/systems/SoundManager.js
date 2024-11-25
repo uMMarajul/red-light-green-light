@@ -12,12 +12,21 @@ class SoundManager {
             loadingScreen: null,
             gameplayMusic: null,
             gunShot: null,
+            greenLight: null,
             redLight: null,
+        };
+
+        // Default priorities
+        this.soundPriorities = {
+            loadingScreen: 1,
+            gameplayMusic: 10,
+            gunShot: 2,
+            greenLight: 10,
+            redLight: 10,
         };
     }
 
     loadSounds() {
-        // Array to hold promises
         const soundPromises = [];
 
         // Helper to load a sound with a promise
@@ -40,10 +49,10 @@ class SoundManager {
         };
 
         // Add loading tasks
-        // soundPromises.push(loadSound('/sounds/loading-screen.mp3', 'loadingScreen'));
-        // soundPromises.push(loadSound('/sounds/gameplay-music.mp3', 'gameplayMusic'));
+        soundPromises.push(loadSound('../assets/sound/greenLight.mp3', 'greenLight'));
         soundPromises.push(loadSound('../assets/sound/shot.mp3', 'gunShot'));
         soundPromises.push(loadSound('./assets/sound/redLightF.mp3', 'redLight'));
+        soundPromises.push(loadSound('../assets/sound/gamePlay.mp3', 'gamePlayMusic'));
 
         // Return a promise that resolves when all sounds are loaded
         Promise.all(soundPromises).then(() => {
@@ -51,10 +60,23 @@ class SoundManager {
         });
     }
 
+    setSoundPriority(soundName, priority) {
+        this.soundPriorities[soundName] = priority;
+    }
+
     playSound(soundName) {
         const sound = this.sounds[soundName];
-        if (sound && !sound.isPlaying) {
-            sound.play();
+        if (sound) {
+            // Adjust volume based on priority
+            const priority = this.soundPriorities[soundName] || 1; // Default priority is 1
+            const maxPriority = Math.max(...Object.values(this.soundPriorities));
+            const normalizedVolume = priority / maxPriority; // Normalize volume based on priority
+            sound.setVolume(normalizedVolume);
+
+            // Play the sound
+            if (!sound.isPlaying) {
+                sound.play();
+            }
         }
     }
 
@@ -63,6 +85,14 @@ class SoundManager {
         if (sound && sound.isPlaying) {
             sound.stop();
         }
+    }
+
+    stopAllSounds() {
+        Object.values(this.sounds).forEach((sound) => {
+            if (sound && sound.isPlaying) {
+                sound.stop();
+            }
+        });
     }
 }
 
