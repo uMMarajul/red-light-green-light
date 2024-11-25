@@ -2,8 +2,8 @@
 import {CharacterAnimationEnum} from "../helper/GameEnums.js"
 import * as THREE from "three";
 
-const WALKING_SPEED = 0.01;
-const ROTATION_SPEED = 0.01;
+const WALKING_SPEED = 0.016;
+const ROTATION_SPEED = 0.02;
 
 class GameLogic {
     constructor(character, inputHandler, animationSystem, gunMan, doll, soundManager, gameField, uiManager) {
@@ -16,10 +16,12 @@ class GameLogic {
         this.gameField = gameField;
         this.uiManager = uiManager;
 
+
         this.dollRotationToggle = true;
         this.lastDollRotationTime = 0;
-        this.rotationSpeed = 50; // Speed for smooth rotation
+        this.rotationSpeed = 40; // Speed for smooth rotation
         this.randomDelay = this.getRandomDelay(); // Initialize the first random delay
+        this.isDollRotating = false;
     }
 
     getRandomDelay() {
@@ -36,6 +38,7 @@ class GameLogic {
 
             // Update the last rotation time
             this.lastDollRotationTime = elapsedTime;
+            this.isDollRotating = true;
 
             // Generate a new random delay for the next rotation
             this.randomDelay = this.getRandomDelay();
@@ -53,6 +56,10 @@ class GameLogic {
         // Smoothly interpolate rotation
         const newRotation = currentRotation + (targetRotation - currentRotation) * this.rotationSpeed * deltaTime;
         this.doll.setRotation(newRotation);
+
+        if (Math.abs(newRotation - targetRotation) < 0.01) { // Threshold for completion
+           this.isDollRotating = false;
+        }
     }
 
     firByGunMan() {
@@ -127,7 +134,7 @@ class GameLogic {
             return;
 
         // If the doll is facing forward and character moves, fire gunman
-        if (!this.dollRotationToggle && isMoving === CharacterAnimationEnum.WALK && this.character.isAlive && !this.character.isDying) {
+        if (!this.dollRotationToggle && isMoving === CharacterAnimationEnum.WALK && this.character.isAlive && !this.character.isDying && !this.isDollRotating) {
             this.firByGunMan();
         }
 
