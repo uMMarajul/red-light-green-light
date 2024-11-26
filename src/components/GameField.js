@@ -14,7 +14,7 @@ class GameField {
         this.floor = null;
         this.walls = [];
         this.clockGroup = null; // Group for clock and text
-        this.timerValue = 40;
+        this.timerValue = Constant.gameTime;
         this.timerInterval = null;
         this.timOut = false;
 
@@ -216,7 +216,7 @@ class GameField {
     }
 
     stopClockWithWin(){
-        this.timerValue = 40;
+        this.timerValue = Constant.gameTime;
         clearInterval(this.timerInterval);
         this.timerInterval = null;
     }
