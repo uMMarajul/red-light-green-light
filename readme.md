@@ -15,7 +15,6 @@ A 3D implementation of the "Red Light, Green Light" game using **Three.js**, ins
    npm install
 4. Start the development server:
    ```bash
-   Copy code
    npm run dev
 5. Open your browser and visit the URL provided by Vite (e.g., http://localhost:5173).
 ## Requirements
