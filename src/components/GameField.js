@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import {FontLoader} from 'three/addons/loaders/FontLoader.js';
-import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { Constant } from "../helper/Constant.js";
 import Floor from "./Floor.js";
 import Wall from "./Wall.js";
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
-import {Constant} from "../helper/Constant.js";
 
 class GameField {
     constructor(scene, callback) {
@@ -14,7 +14,7 @@ class GameField {
         this.floor = null;
         this.walls = [];
         this.clockGroup = null; // Group for clock and text
-        this.timerValue = 40;
+        this.timerValue = Constant.gameTime;
         this.timerInterval = null;
         this.timOut = false;
 
@@ -216,7 +216,7 @@ class GameField {
     }
 
     stopClockWithWin(){
-        this.timerValue = 40;
+        this.timerValue = Constant.gameTime;
         clearInterval(this.timerInterval);
         this.timerInterval = null;
     }
