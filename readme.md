@@ -7,26 +7,17 @@ A 3D implementation of the "Red Light, Green Light" game using **Three.js**, ins
 1. Clone the repository:
    ```bash
    git clone https://github.com/your-repository/red-light-green-light.git
-Navigate to the project directory:
-bash
-Copy code
-cd red-light-green-light
-Install dependencies:
-bash
-Copy code
-npm install
-Start the development server:
-bash
-Copy code
-npm run dev
-Open your browser and visit the URL provided by Vite (e.g., http://localhost:5173).
-Requirements
+2. Navigate to the project directory:
+   ```bash
+   cd red-light-green-light
+3. Install dependencies:
+   ```bash
+   npm install
+4. Start the development server:
+   ```bash
+   Copy code
+   npm run dev
+5. Open your browser and visit the URL provided by Vite (e.g., http://localhost:5173).
+## Requirements
 Node.js and npm installed on your system.
 Enjoy the game! 🚀
-
-Copy code
-
-
-
-
-
