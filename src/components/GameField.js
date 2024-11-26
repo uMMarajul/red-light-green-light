@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import {FontLoader} from 'three/addons/loaders/FontLoader.js';
-import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { Constant } from "../helper/Constant.js";
 import Floor from "./Floor.js";
 import Wall from "./Wall.js";
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
-import {Constant} from "../helper/Constant.js";
 
 class GameField {
     constructor(scene, callback) {
