@@ -4,6 +4,7 @@ import {TextGeometry} from 'three/addons/geometries/TextGeometry.js';
 import Floor from "./Floor.js";
 import Wall from "./Wall.js";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+import {Constant} from "../helper/Constant.js";
 
 class GameField {
     constructor(scene, callback) {
@@ -13,7 +14,7 @@ class GameField {
         this.floor = null;
         this.walls = [];
         this.clockGroup = null; // Group for clock and text
-        this.timerValue = 30;
+        this.timerValue = Constant.gameTime;
         this.timerInterval = null;
         this.timOut = false;
 
@@ -46,7 +47,7 @@ class GameField {
         this.loader = new GLTFLoader();
         this.loader.load('../assets/model/tree.glb', async (gltf) => {
             this.tree = gltf.scene;
-            this.tree.scale.set(1, 1, 1);
+            this.tree.scale.set(1, 1.5, 1.5);
             this.tree.position.set(0,0,-60/2)
             this.scene.add(this.tree);
             if(onComplete) onComplete();
@@ -62,7 +63,7 @@ class GameField {
     }
 
     createWalls() {
-        const wallHeight = 15;
+        const wallHeight = 30;
         const floorWidth = this.floor.width; // Actual floor width
         const floorHeight = this.floor.height; // Actual floor height
         const wallThickness = 1;
@@ -209,13 +210,13 @@ class GameField {
 
     stopClock(){
         this.timOut = true;
-        this.timerValue = 40;
+        this.timerValue = Constant.gameTime;
         clearInterval(this.timerInterval);
         this.timerInterval = null;
     }
 
     stopClockWithWin(){
-        this.timerValue = 30;
+        this.timerValue = Constant.gameTime;
         clearInterval(this.timerInterval);
         this.timerInterval = null;
     }

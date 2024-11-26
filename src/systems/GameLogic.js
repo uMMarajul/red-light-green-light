@@ -2,8 +2,8 @@
 import {CharacterAnimationEnum} from "../helper/GameEnums.js"
 import * as THREE from "three";
 
-const WALKING_SPEED = 0.016;
-const ROTATION_SPEED = 0.01;
+const WALKING_SPEED = 3;
+const ROTATION_SPEED = 3;
 
 class GameLogic {
     constructor(character, inputHandler, animationSystem, gunMan, doll, soundManager, gameField, uiManager) {
@@ -65,6 +65,7 @@ class GameLogic {
     firByGunMan() {
         this.gunMan.fireBullet(this.character);
         this.soundManager.playSound('gunShot');
+        this.fired = true;
     }
 
     checkIfCharacterIsHit() {
@@ -85,11 +86,7 @@ class GameLogic {
         const threshold = 1.0; // Adjust as needed for accuracy
 
         // Check if the character has crossed the red line
-        if (characterPosition.z <= redLinePosition.z + threshold) {
-            return true;
-        }
-
-        return false;
+        return characterPosition.z <= redLinePosition.z + threshold;
 
     }
 
@@ -110,22 +107,24 @@ class GameLogic {
         let isMoving = CharacterAnimationEnum.IDLE;
 
         // Handle character movement
+        let walkingSpeed = WALKING_SPEED * deltaTime;
+        let rotationSpeed = ROTATION_SPEED * deltaTime;
         if (this.inputHandler.isKeyPressed('ArrowUp')) {
-            this.character.mesh.position.z -= WALKING_SPEED * Math.cos(this.character.mesh.rotation.y);
-            this.character.mesh.position.x -= WALKING_SPEED * Math.sin(this.character.mesh.rotation.y);
+            this.character.mesh.position.z -= walkingSpeed * Math.cos(this.character.mesh.rotation.y);
+            this.character.mesh.position.x -= walkingSpeed * Math.sin(this.character.mesh.rotation.y);
             isMoving = CharacterAnimationEnum.WALK;
         }
         if (this.inputHandler.isKeyPressed('ArrowDown')) {
-            this.character.mesh.position.z += WALKING_SPEED * Math.cos(this.character.mesh.rotation.y);
-            this.character.mesh.position.x += WALKING_SPEED * Math.sin(this.character.mesh.rotation.y);
+            this.character.mesh.position.z += walkingSpeed * Math.cos(this.character.mesh.rotation.y);
+            this.character.mesh.position.x += walkingSpeed * Math.sin(this.character.mesh.rotation.y);
             isMoving = CharacterAnimationEnum.WALK;
         }
         if (this.inputHandler.isKeyPressed('ArrowLeft')) {
-            this.character.mesh.rotation.y += ROTATION_SPEED;
+            this.character.mesh.rotation.y += rotationSpeed;
             isMoving = CharacterAnimationEnum.WALK;
         }
         if (this.inputHandler.isKeyPressed('ArrowRight')) {
-            this.character.mesh.rotation.y -= ROTATION_SPEED;
+            this.character.mesh.rotation.y -= rotationSpeed;
             isMoving = CharacterAnimationEnum.WALK;
         }
         this.animationSystem.update(isMoving);
@@ -134,7 +133,7 @@ class GameLogic {
             return;
 
         // If the doll is facing forward and character moves, fire gunman
-        if (!this.dollRotationToggle && isMoving === CharacterAnimationEnum.WALK && this.character.isAlive && !this.character.isDying && !this.isDollRotating) {
+        if (!this.dollRotationToggle && isMoving === CharacterAnimationEnum.WALK && this.character.isAlive  && !this.fired && !this.isDollRotating) {
             this.firByGunMan();
         }
 
@@ -157,6 +156,7 @@ class GameLogic {
         this.gameField.startClock();
         this.doll.resetStates();
         this.soundManager.playSound('gamePlayMusic');
+        this.fired = false;
     }
 }
 

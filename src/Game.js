@@ -85,7 +85,7 @@ class Game {
         this.character.mesh.position.set(3, 0, (this.gameField.floor.height / 2) - 4 );  // Adjusted character position
         this.scene.add(this.character.mesh);
 
-        this.doll.mesh.position.set(0, 2.5, -(this.gameField.floor.height / 2) +4  );  // Adjusted character position
+        this.doll.mesh.position.set(0, 4.79, -(this.gameField.floor.height / 2) +4  );  // Adjusted character position
         this.scene.add(this.doll.mesh);
 
 

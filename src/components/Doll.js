@@ -14,7 +14,7 @@ class Doll {
     loadModel() {
         this.loader.load('../assets/model/doll.glb', (gltf) => {
             this.mesh = gltf.scene;
-            this.mesh.scale.set(1, 0.5, 1);
+            this.mesh.scale.set(1, 1, 1);
             this.mesh.rotation.y = Math.PI; // Default rotation
             if (this.onLoadCallback) {
                 this.onLoadCallback();

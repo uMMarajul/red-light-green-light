@@ -13,7 +13,7 @@ class Bullet {
         this.mesh.position.copy(startPosition);
         this.scene.add(this.mesh);
 
-        this.speed = 1000; // Bullet speed (units per second)
+        this.speed = 100; // Bullet speed (units per second)
         this.isActive = true; // Bullet is active until it collides or exits bounds
     }
 

@@ -24,7 +24,7 @@ class CameraController {
         this.camera.position.copy(offset);
 
         // Make the camera look at the target position
-        this.camera.lookAt(this.target.position);
+        this.camera.lookAt(this.target.position.clone().add(new THREE.Vector3(0, 1, 0)));
     }
 }
 
